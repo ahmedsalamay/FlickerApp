@@ -34,8 +34,8 @@ public class GalleryRVAdapter extends RecyclerView.Adapter<GalleryRVAdapter.MyVi
     public GalleryRVAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
         mContext=context;
-        data=new ArrayList <GsonPhoto.PhotosBean.PhotoBean>();
-        mOfflineData=new ArrayList <PhotoEntities>();
+        data=new ArrayList <>();
+        mOfflineData=new ArrayList <>();
     }
     public void clear(){
         data.clear();
@@ -60,8 +60,7 @@ public class GalleryRVAdapter extends RecyclerView.Adapter<GalleryRVAdapter.MyVi
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view =mInflater.inflate(R.layout.gallery_item,parent,false);
-        MyViewHolder holder=new MyViewHolder(view);
-        return holder;
+        return new MyViewHolder(view);
     }
 
     @Override
@@ -80,17 +79,36 @@ public class GalleryRVAdapter extends RecyclerView.Adapter<GalleryRVAdapter.MyVi
             @Override
             public void onClick(View view) {//get full screen image when i click on an image
                 Intent intent = new Intent(mContext, FullscreenActivity.class);
-                if (QueryUtils.isConnected(mContext)){//either send url to new intent
-                    // class by online data or data base
+                if (QueryUtils.isConnected(mContext)){//either send url to new intentclass by online data or data base
+                    /*//this could happend if i was connected before i start the app
+                    * and disconnected while app is running
+                    * */
+                    if(data.size()!=0){
                     mPhotoInfo = data.get(holder.getPosition());
                     mUrl = String.format(IMAGE_URL, mPhotoInfo.getFarm(), mPhotoInfo.getServer()
                             , mPhotoInfo.getId(), mPhotoInfo.getSecret(), "n");
                     intent.putExtra("URL", mUrl);
-                    mContext.startActivity(intent);
+                    mContext.startActivity(intent);}
+                    else{
+                        mUrl = mOfflineData.get(holder.getPosition()).getUrl();
+                        intent.putExtra("URL", mUrl);
+                        mContext.startActivity(intent);
+                    }
                 }else{
-                    mUrl = mOfflineData.get(holder.getPosition()).getUrl();
-                    intent.putExtra("URL", mUrl);
-                    mContext.startActivity(intent);
+                    /*//this could happend if i was disconnected before i start the app
+                    * and connected while app is running
+                    * */
+                    if(mOfflineData.size()!=0) {
+                        mUrl = mOfflineData.get(holder.getPosition()).getUrl();
+                        intent.putExtra("URL", mUrl);
+                        mContext.startActivity(intent);
+                    }else{
+                        mPhotoInfo = data.get(holder.getPosition());
+                        mUrl = String.format(IMAGE_URL, mPhotoInfo.getFarm(), mPhotoInfo.getServer()
+                                , mPhotoInfo.getId(), mPhotoInfo.getSecret(), "n");
+                        intent.putExtra("URL", mUrl);
+                        mContext.startActivity(intent);
+                    }
                 }
             }
         });

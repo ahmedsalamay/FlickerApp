@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -31,8 +32,6 @@ import com.example.ahmed.flickr.DataModel.PhotoEntities;
 import com.example.ahmed.flickr.R;
 
 import java.util.ArrayList;
-
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 /**
  * Created by Ahmed on 10/28/2017.
@@ -126,8 +125,9 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
             }
         };
         mRecyclerView.addOnScrollListener(mScrollListener);
-        SlideInLeftAnimator animator=new SlideInLeftAnimator();
-        mRecyclerView.setItemAnimator(animator);
+        DefaultItemAnimator animation=new DefaultItemAnimator();
+        animation.setAddDuration(1000);
+        mRecyclerView.setItemAnimator(animation);
         return rootView;
     }
 
@@ -168,7 +168,8 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
             }
             mRecyclerView.getLayoutManager().scrollToPosition(1);
         }
-        else mSwiper.setRefreshing(false);
+        else{ mSwiper.setRefreshing(false);
+        }
 
     }
     /*Aystask to pull all images data and image by image to convert it to ByteArray
@@ -178,7 +179,7 @@ public class MainActivityFragment extends Fragment implements SwipeRefreshLayout
     private class  photoQuerryAsyTask extends AsyncTask<String ,Void,GsonPhoto> {
         @Override
         protected GsonPhoto doInBackground(String... urls) {
-            QueryUtils.insertData(mDBHandler,mPhotos.getPhotos().getPhoto());
+            QueryUtils.insertData(mDBHandler,mPhotos.getPhotos().getPhoto(),getActivity());
             return mPhotos;
         }
 

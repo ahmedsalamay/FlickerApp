@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -57,11 +56,11 @@ public class FullscreenActivity extends AppCompatActivity {
 ///////////////////////////////////////////////////////////////////////////
         //receive an image url and get the byte array from database to view it in full screen
         String data=getIntent().getExtras().getString("URL");
-        Log.e(FullscreenActivity.class.toString(),data);
         PhotoView imageView=(PhotoView) findViewById(R.id.fullscreen_content);
         dbHandler=new DBHandler(this);
         byte[] bytes= dbHandler.getByteArray(data);
         if(bytes!=null){
+            //Convert image converted into bytes into Bitmap
             Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
             imageView.setImageBitmap(bitmap);
         }

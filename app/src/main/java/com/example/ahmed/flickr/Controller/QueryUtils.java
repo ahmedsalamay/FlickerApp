@@ -26,6 +26,11 @@ public final class QueryUtils {
     private QueryUtils(){
     }
 
+    /**
+     * Check the connection
+     * @param context for systemService
+     * @return flag that indicate the connecttion sataus(on/off)
+     */
     public static boolean  isConnected(Context context){
         ConnectivityManager cm =
                 (ConnectivityManager)context
@@ -35,6 +40,12 @@ public final class QueryUtils {
                 activeNetwork.isConnectedOrConnecting();
         return isConnected;
     }
+
+    /**
+     * COnvert image URl into Byte array to be inserted into data base
+     * @param url image source url
+     * @return byte[]  of the image
+     */
     public static byte[] convertImgUrl2ByteArray(URL url){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         InputStream is = null;
@@ -61,17 +72,24 @@ public final class QueryUtils {
         }
         return baos.toByteArray();
     }
+    /**get the image from flickr api Insert data into data base
+     * @param  db database that data will be inserted into it
+     * @param  photoInfo array of images data like server farm and id to form a url
+     * @param  context for check internet conniction
+     * */
 
-
-    public static void insertData(DBHandler db, ArrayList<GsonPhoto.PhotosBean.PhotoBean> photoInfo){
+    public static void insertData(DBHandler db, ArrayList<GsonPhoto.PhotosBean.PhotoBean> photoInfo,
+                                  Context context){
         db.delete();
-        for(int i=0;i<photoInfo.size();i++) {
-            String url = String.format("https://farm%s.staticflickr.com/%s/%s_%s_%s.jpg",
-                    photoInfo.get(i).getFarm(), photoInfo.get(i).getServer()
-                    , photoInfo.get(i).getId(), photoInfo.get(i).getSecret(), "n");
-            URL Url=QueryUtils.createUrl(url);
-            byte[] bytes =QueryUtils.convertImgUrl2ByteArray(Url);
-            long id=db.insert(url ,bytes);
+            for (int i = 0; i < photoInfo.size(); i++) {
+                String url = String.format("https://farm%s.staticflickr.com/%s/%s_%s_%s.jpg",
+                        photoInfo.get(i).getFarm(), photoInfo.get(i).getServer()
+                        , photoInfo.get(i).getId(), photoInfo.get(i).getSecret(), "n");
+                URL Url = QueryUtils.createUrl(url);
+                if(QueryUtils.isConnected(context)) {
+                    byte[] bytes = QueryUtils.convertImgUrl2ByteArray(Url);
+                long id = db.insert(url, bytes);
+            }
         }
     }
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,8 +105,7 @@ public final class QueryUtils {
         }catch (IOException e){
             Log.e(LOG_TAG,"problem in make http request",e);
         }
-        GsonPhoto photoObject=ParsePhoto(jsonResponse);
-        return photoObject;
+        return ParsePhoto(jsonResponse);
     }
 
     public static GsonPhoto ParsePhoto(String resultInputStream){
