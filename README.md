@@ -9,7 +9,6 @@
  * Chrisbanes:PhotoView --> For Zooming
  * Picasso --> Photo Cashing and Download
  * Gson --> Json Parsing
- * Wasabeef --> Recyclerview Animators
  # Issues 
    I was using Git in a right way but somthing happened (by using git command or android )
   * InvalidVirtualFileAccessException: Accessing invalid virtual file: file://E:/Projects/Flickr/.git/refs/remotes; original:110930; found:116537
